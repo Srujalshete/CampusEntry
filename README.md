@@ -1,4 +1,6 @@
-# CampusEntry Project
+<img width="1782" height="866" alt="image" src="https://github.com/user-attachments/assets/55b53be4-bf3d-4d9c-903b-342b07ab0ce2" /># CampusEntry Project
+<img width="1776" height="872" alt="image" src="https://github.com/user-attachments/assets/820352d8-a777-49b4-b463-29c64cefdd2d" />
+
 
 ## Overview
 CampusEntry is a full-stack application designed to manage student entries and administrative tasks efficiently. The frontend is built with React, TypeScript, and Vite, providing a modern and responsive user interface. The backend is powered by Node.js, Express, and MongoDB, ensuring robust data management and API services.
@@ -90,9 +92,21 @@ Encryption is implemented using the CryptoJS library, which provides AES (Advanc
 - **Admin Login**:
   - Email: test@example.com
   - Password: admin123
+   
 - **User Login**:
   - Email: omkar@example.com
   - Password: admin123
+<img width="1782" height="866" alt="image" src="https://github.com/user-attachments/assets/bfa5c421-cfb1-4988-9c40-5487e84e47b6" />
+
+<img width="1752" height="872" alt="image" src="https://github.com/user-attachments/assets/130fca70-0637-4715-afbe-2c3697ce0fa3" />
+
+<img width="1781" height="876" alt="image" src="https://github.com/user-attachments/assets/31bad947-b09a-4166-a4e3-b26fa9cf0f22" />
+
+<img width="1777" height="882" alt="image" src="https://github.com/user-attachments/assets/45e146fc-d842-497f-8732-7d85dc6fd34b" />
+
+
+<img width="1770" height="867" alt="image" src="https://github.com/user-attachments/assets/bca038d5-eb35-43f1-8bfd-9aa390d81dc2" />
+
 
 ## Additional Notes
 - The frontend and backend run independently; ensure both are running for full functionality.
