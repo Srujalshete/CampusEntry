@@ -4,9 +4,10 @@ import Header from "../layout/Header";
 import Overview from "../components/Overview";
 import Users from "../components/Studentlist";
 import Activity from "../components/StudentForm";
+import Userlist from "../components/Userlist";
 
 const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "activity">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "activity" | "adminlist">("overview");
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   return (
@@ -21,12 +22,13 @@ const AdminDashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
-        <Header activeTab={activeTab} />
+        <Header />
 
         <main className="p-6">
-          {activeTab === "overview" && <Overview />}
+          {activeTab === "overview" && <Overview setActiveTab={setActiveTab} />}
           {activeTab === "users" && <Users />}
           {activeTab === "activity" && <Activity />}
+          {activeTab === "adminlist" && <Userlist />}
         </main>
       </div>
     </div>

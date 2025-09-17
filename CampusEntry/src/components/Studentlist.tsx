@@ -23,7 +23,7 @@ const StudentList: React.FC = () => {
     direction: "asc",
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
   const [editedStudent, setEditedStudent] = useState<Partial<Student>>({});
@@ -67,7 +67,7 @@ const StudentList: React.FC = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/students');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE}/students`);
       if (response.ok) {
         const data = await response.json();
         const decryptedStudents = data.map((student: any) => ({
@@ -83,10 +83,10 @@ const StudentList: React.FC = () => {
         }));
         setStudents(decryptedStudents);
       } else {
-        setMessage("Failed to fetch students.");
+        setToast({ message: "Failed to fetch students.", type: "error" });
       }
     } catch (err) {
-      setMessage("Network error.");
+      setToast({ message: "Network error.", type: "error" });
     }
     setLoading(false);
   };
@@ -114,17 +114,17 @@ const StudentList: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this student?")) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/student/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE}/student/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
         setStudents(students.filter(s => s._id !== id));
-        setMessage("Student deleted successfully.");
+        setToast({ message: "Student deleted successfully.", type: "success" });
       } else {
-        setMessage("Failed to delete student.");
+        setToast({ message: "Failed to delete student.", type: "error" });
       }
     } catch (err) {
-      setMessage("Network error.");
+      setToast({ message: "Network error.", type: "error" });
     }
   };
 
@@ -188,7 +188,7 @@ const StudentList: React.FC = () => {
           encryptedUpdates[key] = encrypt(updates[key as keyof typeof updates] as string);
         }
       }
-      const response = await fetch(`http://localhost:5000/api/student/${editingStudentId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE}/student/${editingStudentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(encryptedUpdates),
@@ -217,11 +217,6 @@ const StudentList: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h2 className="text-xl font-semibold mb-4">Students List</h2>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      {message && (
-        <p className={`mb-4 text-sm ${message.includes("success") ? "text-green-600" : "text-red-600"}`}>
-          {message}
-        </p>
-      )}
       <div className="mb-4 flex justify-end">
         <input
           type="text"
@@ -234,156 +229,143 @@ const StudentList: React.FC = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-          <tr className="border-b">
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("fullName")}>Full Name</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("email")}>Email</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("phoneNumber")}>Phone</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("dateOfBirth")}>DOB</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("gender")}>Gender</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("courseEnrolled")}>Course</th>
-            <th className="p-4 text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("password")}>Password</th>
-            <th className="p-4 text-left">Actions</th>
-          </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student) => (
-                <tr key={student._id} className="border-b hover:bg-gray-50">
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="text"
-                        value={editedStudent.fullName || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, fullName: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      student.fullName
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="email"
-                        value={editedStudent.email || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, email: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      student.email
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="tel"
-                        value={editedStudent.phoneNumber || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, phoneNumber: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      student.phoneNumber
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="date"
-                        value={editedStudent.dateOfBirth || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, dateOfBirth: e.target.value })}
-                        max={new Date().toISOString().split('T')[0]}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      student.dateOfBirth
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <select
-                        value={editedStudent.gender || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, gender: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    ) : (
-                      student.gender
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="text"
-                        value={editedStudent.courseEnrolled || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, courseEnrolled: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      student.courseEnrolled
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    {editingStudentId === student._id ? (
-                      <input
-                        type="password"
-                        value={editedStudent.password || ''}
-                        onChange={(e) => setEditedStudent({ ...editedStudent, password: e.target.value })}
-                        className="w-full p-1 border rounded whitespace-nowrap"
-                      />
-                    ) : (
-                      '••••••••' // Masked password display
-                    )}
-                  </td>
-                  <td className="p-4 whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      {editingStudentId === student._id ? (
-                        <>
-                          <button
-                            onClick={handleSave}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
-                            title="Save"
-                          >
-                            <FiCheck size={18} />
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg"
-                            title="Cancel"
-                          >
-                            <FiX size={18} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => handleEdit(student)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                            title="Edit"
-                          >
-                            <FiEdit2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(student._id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                            title="Delete"
-                          >
-                            <FiTrash2 size={18} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-xs">
+  <table className="w-full text-sm text-left text-gray-500">
+    <thead className="text-xs text-gray-700 uppercase bg-gray-200">
+      <tr>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("fullName")}>Full Name</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("email")}>Email</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("phoneNumber")}>Phone</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("dateOfBirth")}>DOB</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("gender")}>Gender</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("courseEnrolled")}>Course</th>
+        <th className="px-6 py-2 cursor-pointer whitespace-nowrap" onClick={() => handleSort("password")}>Password</th>
+        <th className="px-6 py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredStudents.map((student) => (
+        <tr key={student._id} className="bg-white border-b hover:bg-gray-50 text-gray-900">
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="text"
+                value={editedStudent.fullName || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, fullName: e.target.value })}
+                className="w-full p-1 border rounded"
+              />
+            ) : student.fullName}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="email"
+                value={editedStudent.email || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, email: e.target.value })}
+                className="w-full p-1 border rounded"
+              />
+            ) : student.email}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="tel"
+                value={editedStudent.phoneNumber || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, phoneNumber: e.target.value })}
+                className="w-full p-1 border rounded"
+              />
+            ) : student.phoneNumber}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="date"
+                value={editedStudent.dateOfBirth || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, dateOfBirth: e.target.value })}
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full p-1 border rounded"
+              />
+            ) : student.dateOfBirth}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <select
+                value={editedStudent.gender || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, gender: e.target.value })}
+                className="w-full p-1 border rounded"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            ) : student.gender}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="text"
+                value={editedStudent.courseEnrolled || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, courseEnrolled: e.target.value })}
+                className="w-full p-1 border rounded"
+              />
+            ) : student.courseEnrolled}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            {editingStudentId === student._id ? (
+              <input
+                type="password"
+                value={editedStudent.password || ''}
+                onChange={(e) => setEditedStudent({ ...editedStudent, password: e.target.value })}
+                className="w-full p-1 border rounded"
+              />
+            ) : '••••••••'}
+          </td>
+          <td className="px-6 py-2 whitespace-nowrap">
+            <div className="flex space-x-2">
+              {editingStudentId === student._id ? (
+                <>
+                  <button
+                    onClick={handleSave}
+                    className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
+                    title="Save"
+                  >
+                    <FiCheck size={18} />
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="p-2 text-gray-600 hover:bg-gray-200 rounded-lg"
+                    title="Cancel"
+                  >
+                    <FiX size={18} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleEdit(student)}
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                    title="Edit"
+                  >
+                    <FiEdit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(student._id)}
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                    title="Delete"
+                  >
+                    <FiTrash2 size={18} />
+                  </button>
+                </>
+              )}
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
       )}
     </div>
   );

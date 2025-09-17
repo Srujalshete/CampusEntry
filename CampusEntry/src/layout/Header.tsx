@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,8 +25,17 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  // Load username and role from sessionStorage on mount
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("userEmail");
+    const storedRole = sessionStorage.getItem("userRole");
+    setUsername(storedUsername);
+    setRole(storedRole);
+  }, []);
+
   const handleSignOut = () => {
     // Add any sign out logic here (like clearing tokens)
+    sessionStorage.clear();
     navigate("/login");
   };
 
@@ -49,16 +60,20 @@ const Header: React.FC = () => {
             />
           </button>
 
-{dropdownOpen && (
-  <div className="absolute right-0 top-full w-32 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-    <button
-      onClick={handleSignOut}
-      className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-    >
-      Sign Out
-    </button>
-  </div>
-)}
+          {dropdownOpen && (
+            <div className="absolute right-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-2">
+              <div className="px-4 py-2 border-b border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 truncate">{username}</p>
+                <p className="text-xs text-gray-500 truncate">{role}</p>
+              </div>
+              <button
+                onClick={handleSignOut}
+                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md mt-2"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

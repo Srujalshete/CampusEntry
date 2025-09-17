@@ -229,7 +229,7 @@ const StudentForm: React.FC = () => {
                   courseEnrolled: encrypt(student.course),
                   password: encrypt(student.password),
                 };
-                const response = await fetch('http://localhost:5000/api/register', {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE}/register`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(encryptedData),
@@ -256,7 +256,7 @@ const StudentForm: React.FC = () => {
               setLoading(false);
             }}
             disabled={loading || Object.values(student).some(value => !value.trim())}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            className="px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 disabled:opacity-50"
           >
             {loading ? "Submitting..." : "Submit"}
           </button>

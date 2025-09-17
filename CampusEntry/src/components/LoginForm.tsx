@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import bg from "../assets/sky.png";
-import logo from "../assets/TYPE_TalentConnect.svg";
-import Omfys from "../assets/omfyslogo.png";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Toast from "../components/ui/Toast";
@@ -60,16 +58,19 @@ const Login: React.FC = () => {
           email: username,
           password: password,
         };
-        const response = await fetch('http://localhost:5000/api/admin/login',{
+        const response = await fetch(`${import.meta.env.VITE_API_BASE}/admin/login`,{
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(encryptedData),
         });
         if (response.ok) {
+          const data = await response.json();
+          sessionStorage.setItem('userRole', data.role);
+          sessionStorage.setItem('userEmail', data.email);
+          login();
           setToastMessage("Login successful!");
           setToastType("success");
-          login();
-          navigate("/dashboard");
+          navigate('/dashboard');
         } else {
           let errorMessage = "Login failed.";
           try {
@@ -106,8 +107,8 @@ const Login: React.FC = () => {
           <input
             id="username"
             type="text"
-            placeholder="test@example.com"
-            className={`w-full mb-6 px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 ${
+            placeholder="email@example.com"
+            className={`w-full mb-6 px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white  text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 ${
               errors.username ? "border-red-500 focus:ring-red-500" : ""
             }`}
             value={username}
@@ -123,7 +124,7 @@ const Login: React.FC = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="************"
-              className={`w-full mb-2 px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 ${
+              className={`w-full mb-2 px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 ${
                 errors.password ? "border-red-500 focus:ring-red-500" : ""
               }`}
               value={password}
@@ -134,7 +135,7 @@ const Login: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3.5 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 focus:outline-none"
+              className="absolute right-3 top-3.5 text-gray-400  hover:text-gray-600  focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
@@ -207,7 +208,7 @@ const Login: React.FC = () => {
               </div>
 
               <p className="text-gray-100 mt-12">
-                Discover endless opportunities on TalentConnect where top talent
+                Discover endless opportunities on CampusEntry where top talent
                 meets the right careers.
                 <br /> Jump right in!
               </p>

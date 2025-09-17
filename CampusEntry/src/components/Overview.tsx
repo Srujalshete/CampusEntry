@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FiUsers, FiUserCheck } from "react-icons/fi";
 
-const Overview: React.FC = () => {
+interface OverviewProps {
+  setActiveTab: (tab: "overview" | "users" | "activity" | "adminlist") => void;
+}
+
+const Overview: React.FC<OverviewProps> = ({ setActiveTab }) => {
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [totalStudents, setTotalStudents] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,14 +18,14 @@ const Overview: React.FC = () => {
         setError(null);
 
         // Fetch total students count
-        const studentResponse = await fetch("/api/count");
+        const studentResponse = await fetch(`${import.meta.env.VITE_API_BASE}/count`);
         if (!studentResponse.ok) {
           throw new Error("Failed to fetch student count");
         }
         const studentData = await studentResponse.json();
 
         // Fetch total users count (admins)
-        const userResponse = await fetch("/api/admin/counts");
+        const userResponse = await fetch(`${import.meta.env.VITE_API_BASE}/admin/counts`);
         if (!userResponse.ok) {
           throw new Error("Failed to fetch user count");
         }
@@ -47,18 +51,22 @@ const Overview: React.FC = () => {
     return <div className="text-red-500">Error: {error}</div>;
   }
 
+  const userRole = sessionStorage.getItem('userRole');
+
   const stats = [
-    {
+    ...(userRole === 'admin' ? [{
       id: 1,
       title: "Total Users",
       value: totalUsers !== null ? totalUsers.toString() : "N/A",
-      icon: <FiUsers className="text-blue-500" size={24} />,
-    },
+      icon: <FiUserCheck className="text-violet-500" size={24} />,
+      onClick: () => setActiveTab("adminlist"),
+    }] : []),
     {
       id: 2,
       title: "Total Students",
       value: totalStudents !== null ? totalStudents.toString() : "N/A",
-      icon: <FiUserCheck className="text-green-500" size={24} />,
+      icon: <FiUsers className="text-green-500" size={24} />,
+      onClick: () => setActiveTab("users"),
     },
   ];
 
@@ -67,7 +75,8 @@ const Overview: React.FC = () => {
       {stats.map((stat) => (
         <div
           key={stat.id}
-          className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+          className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          onClick={stat.onClick}
         >
           <div className="flex items-center justify-between">
             <div>
