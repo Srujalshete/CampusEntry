@@ -2,12 +2,13 @@
 
 <img width="1776" height="872" alt="image" src="https://github.com/user-attachments/assets/820352d8-a777-49b4-b463-29c64cefdd2d" />
 
-<img width="1782" height="866" alt="image" src="https://github.com/user-attachments/assets/55b53be4-bf3d-4d9c-903b-342b07ab0ce2" />
-
 
 
 ## Overview
 CampusEntry is a full-stack application designed to manage student entries and administrative tasks efficiently. The frontend is built with React, TypeScript, and Vite, providing a modern and responsive user interface. The backend is powered by Node.js, Express, and MongoDB, ensuring robust data management and API services.
+
+<img width="1782" height="866" alt="image" src="https://github.com/user-attachments/assets/55b53be4-bf3d-4d9c-903b-342b07ab0ce2" />
+
 
 ## Frontend
 - Built with React 19.1.1 and TypeScript.
